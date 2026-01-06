@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/gob"
 	"errors"
 	"fmt"
 	"io"
@@ -20,6 +22,11 @@ type (
 	WrappedDEK []byte
 	Ciphertext []byte
 )
+
+type EncryptedDataPayload struct {
+	DEK     WrappedDEK
+	Payload Ciphertext
+}
 
 var (
 	aadWrapDEK  = []byte("wrap:dek:v1")
@@ -55,6 +62,18 @@ func main() {
 	// Print as base64 for readability/transport.
 	fmt.Println("edek_b64:", base64.StdEncoding.EncodeToString(edek))
 	fmt.Println("ct_b64:  ", base64.StdEncoding.EncodeToString(ct))
+
+	var dataBuffer bytes.Buffer
+	enc := gob.NewEncoder(&dataBuffer)
+
+	err = enc.Encode(EncryptedDataPayload{
+		DEK:     edek,
+		Payload: ct,
+	})
+
+	fmt.Println(dataBuffer)
+
+	os.WriteFile("out.bin", dataBuffer.Bytes(), 0666)
 
 	// Round-trip demo.
 	dek2, err := UnwrapDEK(edek, kek)
