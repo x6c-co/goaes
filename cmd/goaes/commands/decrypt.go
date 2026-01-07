@@ -5,6 +5,7 @@ import (
 	"encoding/gob"
 	"log/slog"
 	"os"
+	"path/filepath"
 
 	"github.com/nerdsec/goaes/internal"
 	"github.com/urfave/cli/v3"
@@ -14,6 +15,7 @@ func Decrypt(ctx context.Context, cmd *cli.Command) error {
 	source := cmd.String("source")
 	destination := cmd.String("destination")
 
+	source = filepath.Clean(source)
 	file, err := os.Open(source)
 	if err != nil {
 		return err
