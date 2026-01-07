@@ -5,9 +5,7 @@ import (
 )
 
 func Decrypt(edek WrappedDEK, ct Ciphertext) ([]byte, error) {
-	if err := godotenv.Load(); err != nil {
-		return nil, err
-	}
+	godotenv.Load()
 
 	kek, err := NewKEKFromEnvB64("SECRET_KEY")
 	if err != nil {
