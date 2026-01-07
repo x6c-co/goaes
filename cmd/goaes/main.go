@@ -31,13 +31,13 @@ func main() {
 				Flags: []cli.Flag{
 					&cli.StringFlag{
 						Name:     "source",
-						Aliases:  []string{"s"},
+						Aliases:  []string{"s", "i"},
 						Usage:    "source file to encrypt",
 						Required: true,
 					},
 					&cli.StringFlag{
 						Name:     "destination",
-						Aliases:  []string{"d"},
+						Aliases:  []string{"d", "o"},
 						Usage:    "where to write the encrypted file",
 						Required: true,
 					},
@@ -51,13 +51,13 @@ func main() {
 				Flags: []cli.Flag{
 					&cli.StringFlag{
 						Name:     "source",
-						Aliases:  []string{"s"},
+						Aliases:  []string{"s", "i"},
 						Usage:    "source file to decrypt",
 						Required: true,
 					},
 					&cli.StringFlag{
 						Name:     "destination",
-						Aliases:  []string{"d"},
+						Aliases:  []string{"d", "o"},
 						Usage:    "where to write the decrypted file",
 						Required: true,
 					},
