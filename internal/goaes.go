@@ -20,29 +20,24 @@ const (
 	keyLen  = 32
 )
 
-func NewKEKFromEnvB64(passphraseEnvVar string) (KEK, Salt, error) {
+func NewKEKFromEnvB64(passphraseEnvVar string, salt Salt) (KEK, error) {
 	b64Passphrase := os.Getenv(passphraseEnvVar)
 	if b64Passphrase == "" {
-		return nil, nil, fmt.Errorf("%s is not set", passphraseEnvVar)
+		return nil, fmt.Errorf("%s is not set", passphraseEnvVar)
 	}
 
 	passphrase, err := base64.StdEncoding.DecodeString(b64Passphrase)
 	if err != nil {
-		return nil, nil, fmt.Errorf("decode %s base64: %w", passphraseEnvVar, err)
-	}
-
-	salt, err := NewSalt()
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to create salt %w", err)
+		return nil, fmt.Errorf("decode %s base64: %w", passphraseEnvVar, err)
 	}
 
 	raw := argon2.IDKey(passphrase, salt, time, memory, threads, keyLen)
 
 	if !validAESKeyLen(len(raw)) {
-		return nil, nil, errBadKeyLn
+		return nil, errBadKeyLn
 	}
 
-	return KEK(raw), Salt(salt), nil
+	return KEK(raw), nil
 }
 
 func NewDEK() (DEK, error) {

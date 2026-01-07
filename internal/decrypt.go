@@ -1,7 +1,7 @@
 package internal
 
 func Decrypt(edek WrappedDEK, ct Ciphertext, salt Salt) ([]byte, error) {
-	kek, err := NewKEKFromEnvB64("GOAES_PASSPHRASE")
+	kek, err := NewKEKFromEnvB64("GOAES_PASSPHRASE", salt)
 	if err != nil {
 		return nil, err
 	}
