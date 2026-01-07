@@ -23,6 +23,32 @@ func main() {
 				Usage:   "Generate a base64 encoded key",
 				Action:  commands.Generate,
 			},
+			{
+				Name:    "encrypt",
+				Aliases: []string{"e"},
+				Usage:   "Encrypt a file",
+				Action:  commands.Encrypt,
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:     "source",
+						Aliases:  []string{"s"},
+						Usage:    "source file to encrypt",
+						Required: true,
+					},
+					&cli.StringFlag{
+						Name:     "destination",
+						Aliases:  []string{"d"},
+						Usage:    "where to write the encrypted file",
+						Required: true,
+					},
+				},
+			},
+			{
+				Name:    "decrypt",
+				Aliases: []string{"d"},
+				Usage:   "Decrypt a file",
+				Action:  commands.Decrypt,
+			},
 		},
 	}
 
