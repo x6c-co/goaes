@@ -4,23 +4,43 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
 	"os"
+
+	"golang.org/x/crypto/pbkdf2"
 )
 
-func NewKEKFromEnvB64(envVar string) (KEK, error) {
-	b64 := os.Getenv(envVar)
+const (
+	keyIterations = 600_000
+	keyLength     = 32
+)
+
+func NewKEKFromEnvB64(passphraseEnvVar, saltEnvVar string) (KEK, error) {
+	b64 := os.Getenv(passphraseEnvVar)
 	if b64 == "" {
-		return nil, fmt.Errorf("%s is not set", envVar)
+		return nil, fmt.Errorf("%s is not set", passphraseEnvVar)
 	}
 
-	raw, err := base64.StdEncoding.DecodeString(b64)
-	if err != nil {
-		return nil, fmt.Errorf("decode %s base64: %w", envVar, err)
+	b64Salt := os.Getenv(saltEnvVar)
+	if b64Salt == "" {
+		return nil, fmt.Errorf("%s is not set", saltEnvVar)
 	}
+
+	passphrase, err := base64.StdEncoding.DecodeString(b64)
+	if err != nil {
+		return nil, fmt.Errorf("decode %s base64: %w", passphraseEnvVar, err)
+	}
+
+	salt, err := base64.StdEncoding.DecodeString(b64Salt)
+	if err != nil {
+		return nil, fmt.Errorf("decode %s base64: %w", saltEnvVar, err)
+	}
+
+	raw := pbkdf2.Key(passphrase, salt, keyIterations, keyLength, sha256.New)
 
 	if !validAESKeyLen(len(raw)) {
 		return nil, errBadKeyLn
