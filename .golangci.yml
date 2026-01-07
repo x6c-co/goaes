@@ -5,3 +5,12 @@ linters:
     - nlreturn
     - mnd
     - gosec
+    - cyclop
+    - gocyclo
+    - gocritic
+    - lll
+    - funlen
+    - dogsled
+    - gocognit
+    - nestif
+    - whitespace
