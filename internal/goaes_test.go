@@ -3,7 +3,6 @@ package internal_test
 import (
 	"bytes"
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/nerdsec/goaes/internal"
@@ -47,43 +46,34 @@ func TestNewSalt(t *testing.T) {
 
 func TestNewKEKFromEnvB64(t *testing.T) {
 	tests := []struct {
-		name             string
-		passphraseEnvVar string
-		passphrase       string
-		salt             internal.Salt
-		wantErr          bool
+		name       string
+		passphrase string
+		salt       internal.Salt
+		wantErr    bool
 	}{
 		{
-			name:             "Valid base64",
-			passphraseEnvVar: "GOAES_PASSPHRASE",
-			passphrase:       validPassphrase,
-			salt:             []byte("kD+tNSxjss1XchcyyrKJyZBGg2mdmhh/IO3I87WW2Ds="),
-			wantErr:          false,
+			name:       "Valid base64",
+			passphrase: validPassphrase,
+			salt:       []byte("kD+tNSxjss1XchcyyrKJyZBGg2mdmhh/IO3I87WW2Ds="),
+			wantErr:    false,
 		},
 		{
-			name:             "Invalid passphrase base64",
-			passphraseEnvVar: "GOAES_PASSPHRASE",
-			passphrase:       "dJyHOdMbG94EMvQGQrs6YZiXGiAGQgDYtx6eqLufQg=",
-			salt:             []byte("kD+tNSxjss1XchcyyrKJyZBGg2mdmhh/IO3I87WW2Ds="),
-			wantErr:          true,
+			name:       "Invalid passphrase base64",
+			passphrase: "dJyHOdMbG94EMvQGQrs6YZiXGiAGQgDYtx6eqLufQg=",
+			salt:       []byte("kD+tNSxjss1XchcyyrKJyZBGg2mdmhh/IO3I87WW2Ds="),
+			wantErr:    true,
 		},
 		{
-			name:             "Empty seed",
-			passphraseEnvVar: "GOAES_PASSPHRASE",
-			passphrase:       validPassphrase,
-			salt:             []byte(""),
-			wantErr:          false,
+			name:       "Empty seed",
+			passphrase: validPassphrase,
+			salt:       []byte(""),
+			wantErr:    false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := os.Setenv(tt.passphraseEnvVar, tt.passphrase)
-			if err != nil {
-				t.Fatal("failed to set env var")
-			}
-
-			_, gotErr := internal.NewKEKFromEnvB64(tt.passphraseEnvVar, tt.salt)
+			_, gotErr := internal.NewKEKFromEnvB64(tt.passphrase, tt.salt)
 			if gotErr != nil {
 				if !tt.wantErr {
 					t.Errorf("NewKEKFromEnvB64() failed: %v", gotErr)
@@ -100,13 +90,8 @@ func TestNewKEKFromEnvB64(t *testing.T) {
 }
 
 func TestWrapDEK(t *testing.T) {
-	err := os.Setenv("GOAES_PASSPHRASE", validPassphrase)
-	if err != nil {
-		t.Fatal("failed to get env var")
-	}
-
 	kek, err := internal.NewKEKFromEnvB64(
-		"GOAES_PASSPHRASE",
+		validPassphrase,
 		[]byte("salt"),
 	)
 	if err != nil {

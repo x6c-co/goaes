@@ -36,7 +36,9 @@ func Decrypt(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	plaintext, err := internal.Decrypt(encryptedPayload.DEK, encryptedPayload.Payload, encryptedPayload.Salt)
+	passphrase := os.Getenv(PassphraseEnvVar)
+
+	plaintext, err := internal.Decrypt(passphrase, encryptedPayload.DEK, encryptedPayload.Payload, encryptedPayload.Salt)
 	if err != nil {
 		return err
 	}

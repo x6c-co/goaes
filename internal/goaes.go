@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"os"
 
 	"golang.org/x/crypto/argon2"
 )
@@ -20,15 +19,10 @@ const (
 	keyLen  = 32
 )
 
-func NewKEKFromEnvB64(passphraseEnvVar string, salt Salt) (KEK, error) {
-	b64Passphrase := os.Getenv(passphraseEnvVar)
-	if b64Passphrase == "" {
-		return nil, fmt.Errorf("%s is not set", passphraseEnvVar)
-	}
-
+func NewKEKFromEnvB64(b64Passphrase string, salt Salt) (KEK, error) {
 	passphrase, err := base64.StdEncoding.DecodeString(b64Passphrase)
 	if err != nil {
-		return nil, fmt.Errorf("decode %s base64: %w", passphraseEnvVar, err)
+		return nil, fmt.Errorf("decode %s base64: %w", b64Passphrase, err)
 	}
 
 	raw := argon2.IDKey(passphrase, salt, time, memory, threads, keyLen)

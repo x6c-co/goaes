@@ -21,7 +21,9 @@ func Encrypt(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	payload, err := internal.Encrypt(plaintext)
+	passphrase := os.Getenv(PassphraseEnvVar)
+
+	payload, err := internal.Encrypt(passphrase, plaintext)
 	if err != nil {
 		return err
 	}

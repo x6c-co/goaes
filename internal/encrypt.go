@@ -1,12 +1,12 @@
 package internal
 
-func Encrypt(data []byte) (EncryptedDataPayload, error) {
+func Encrypt(passphrase string, data []byte) (EncryptedDataPayload, error) {
 	salt, err := NewSalt()
 	if err != nil {
 		return EncryptedDataPayload{}, err
 	}
 
-	kek, err := NewKEKFromEnvB64("GOAES_PASSPHRASE", salt)
+	kek, err := NewKEKFromEnvB64(passphrase, salt)
 	if err != nil {
 		return EncryptedDataPayload{}, err
 	}
