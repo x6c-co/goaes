@@ -119,3 +119,79 @@ func TestWrapDEK(t *testing.T) {
 		t.Errorf("edek too small, edek: %v len: %d", edek, len(edek))
 	}
 }
+
+func TestUnwrapDEK(t *testing.T) {
+	kek, err := internal.NewKEKFromEnvB64(
+		validPassphrase,
+		[]byte("salt"),
+	)
+	if err != nil {
+		t.Fatalf("failed to create kek. error %v", err)
+	}
+
+	dek, err := internal.NewDEK()
+	if err != nil {
+		t.Fatalf("failed to create dek. error %v", err)
+	}
+
+	edek, err := internal.WrapDEK(dek, kek)
+	if err != nil {
+		t.Fatalf("failed to create edek. error %v", err)
+	}
+
+	if bytes.Equal(dek, edek) {
+		t.Error("dek should not be the same as edek")
+	}
+
+	if len(edek) < minWrappedDEKSize {
+		t.Errorf("edek too small, edek: %v len: %d", edek, len(edek))
+	}
+
+	unwrapped, err := internal.UnwrapDEK(edek, kek)
+	if err != nil {
+		t.Fatalf("failed to create edek. error %v", err)
+	}
+
+	if !bytes.Equal(dek, unwrapped) {
+		t.Errorf("unwrapped key doesn't match, %v %v", edek, unwrapped)
+	}
+}
+
+func TestEncryptData(t *testing.T) {
+	input := []byte("hello")
+	dek, err := internal.NewDEK()
+	if err != nil {
+		t.Fatalf("failed to create dek. error %v", err)
+	}
+
+	ct, err := internal.EncryptData(input, dek)
+	if err != nil {
+		t.Fatalf("failed to encrypt. error %v", err)
+	}
+
+	if bytes.Equal(input, ct) {
+		t.Error("input wasn't encrypted")
+	}
+}
+
+func TestDecryptData(t *testing.T) {
+	input := []byte("hello")
+	dek, err := internal.NewDEK()
+	if err != nil {
+		t.Fatalf("failed to create dek. error %v", err)
+	}
+
+	ct, err := internal.EncryptData(input, dek)
+	if err != nil {
+		t.Fatalf("failed to encrypt. error %v", err)
+	}
+
+	pt, err := internal.DecryptData(ct, dek)
+	if err != nil {
+		t.Fatalf("failed to decrypt. error %v", err)
+	}
+
+	if !bytes.Equal(input, pt) {
+		t.Error("decrypted doesn't match input")
+	}
+}
