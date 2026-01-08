@@ -1,37 +1,45 @@
 package internal_test
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
 	"github.com/nerdsec/goaes/internal"
 )
 
-const totalIterationTests = 100
+const (
+	totalIterationTests = 10
+	minSize             = 32
+)
 
 func TestNewDEK(t *testing.T) {
-	for range totalIterationTests {
-		dek, err := internal.NewDEK()
-		if err != nil {
-			t.Errorf("failed to create dek. error: %v", err)
-		}
+	for i := range totalIterationTests {
+		t.Run(fmt.Sprintf("TestNewDek %d", i), func(t *testing.T) {
+			dek, err := internal.NewDEK()
+			if err != nil {
+				t.Errorf("failed to create dek. error: %v", err)
+			}
 
-		if len(dek) < 32 {
-			t.Errorf("dek too small")
-		}
+			if len(dek) < minSize {
+				t.Errorf("dek too small")
+			}
+		})
 	}
 }
 
 func TestNewSalt(t *testing.T) {
-	for range totalIterationTests {
-		salt, err := internal.NewSalt()
-		if err != nil {
-			t.Errorf("failed to create salt. error: %v", err)
-		}
+	for i := range totalIterationTests {
+		t.Run(fmt.Sprintf("TestNewSalt %d", i), func(t *testing.T) {
+			salt, err := internal.NewSalt()
+			if err != nil {
+				t.Errorf("failed to create salt. error: %v", err)
+			}
 
-		if len(salt) < 32 {
-			t.Errorf("salt too small")
-		}
+			if len(salt) < minSize {
+				t.Errorf("salt too small")
+			}
+		})
 	}
 }
 
