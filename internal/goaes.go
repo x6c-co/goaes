@@ -15,7 +15,7 @@ import (
 
 const (
 	time    = 3
-	memory  = 256 * 1024
+	memory  = 256 * 1024 // 256mb
 	threads = 4
 	keyLen  = 32
 )
