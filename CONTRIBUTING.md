@@ -1,0 +1,5 @@
+- All contributions are welcome
+- Please first create an issue so we can discuss the changes
+- Create a fork of the repo
+- Create a feature branch
+- Create a pull request when you're ready
