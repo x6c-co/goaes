@@ -9,11 +9,11 @@ const (
 func PackagePayload(payload EncryptedDataPayload) []byte {
 	header := make([]byte, headerLength)
 
-	copy(header[:], payload.Salt)
+	copy(header, payload.Salt)
 	copy(header[len(payload.Salt):], payload.DEK)
 
 	buffer := make([]byte, headerLength+len(payload.Payload))
-	copy(buffer[:], header)
+	copy(buffer, header)
 	copy(buffer[len(header):], payload.Payload)
 
 	return buffer
