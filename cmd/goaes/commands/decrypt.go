@@ -2,7 +2,7 @@ package commands
 
 import (
 	"context"
-	"encoding/gob"
+	"io"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -35,14 +35,12 @@ func Decrypt(ctx context.Context, cmd *cli.Command) error {
 		}
 	}()
 
-	enc := gob.NewDecoder(file)
-
-	var encryptedPayload internal.EncryptedDataPayload
-
-	err = enc.Decode(&encryptedPayload)
+	data, err := io.ReadAll(file)
 	if err != nil {
 		return err
 	}
+
+	encryptedPayload := internal.UnpackagePayload(data)
 
 	passphrase := os.Getenv(PassphraseEnvVar)
 

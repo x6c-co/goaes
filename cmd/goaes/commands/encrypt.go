@@ -1,9 +1,7 @@
 package commands
 
 import (
-	"bytes"
 	"context"
-	"encoding/gob"
 	"os"
 	"path/filepath"
 
@@ -36,16 +34,10 @@ func Encrypt(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	var dataBuffer bytes.Buffer
-	enc := gob.NewEncoder(&dataBuffer)
-
-	err = enc.Encode(payload)
-	if err != nil {
-		return err
-	}
+	buffer := internal.PackagePayload(payload)
 
 	destination = filepath.Clean(destination)
-	err = os.WriteFile(destination, dataBuffer.Bytes(), fileMode)
+	err = os.WriteFile(destination, buffer, fileMode)
 	if err != nil {
 		return err
 	}
