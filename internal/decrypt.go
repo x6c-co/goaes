@@ -26,22 +26,10 @@ func Decrypt(passphrase string, edek WrappedDEK, ct Ciphertext, salt Salt) ([]by
 		return nil, err
 	}
 
-	defer func() {
-		for i := range kek {
-			kek[i] = 0
-		}
-	}()
-
 	dek, err := UnwrapDEK(edek, kek)
 	if err != nil {
 		return nil, err
 	}
-
-	defer func() {
-		for i := range dek {
-			dek[i] = 0
-		}
-	}()
 
 	pt, err := DecryptData(ct, dek)
 	if err != nil {
